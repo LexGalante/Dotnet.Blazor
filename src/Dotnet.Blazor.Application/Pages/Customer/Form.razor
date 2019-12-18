@@ -1,0 +1,115 @@
+﻿@page "/customer/form"
+@page "/customer/form/{Id:int}"
+
+@using Dotnet.Blazor.Domain
+@using Dotnet.Blazor.Service.Contracts
+@using Dotnet.Blazor.Application.ViewModels
+@using AutoMapper
+
+@inject ICustomerService _service
+@inject NavigationManager _navigationManager
+@inject IMapper _mapper
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Principal</a></li>
+        <li class="breadcrumb-item"><a href="/customers">Clientes</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Novo</li>
+    </ol>
+</nav>
+
+<EditForm Model="@customer" OnValidSubmit="@HandleSubmit">
+    <div class="card">
+        <div class="card-header">
+            <h3>Cadastro Cliente</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <div class="form-group">
+                        <label for="id">Nome</label>
+                        <InputText id="Name" @bind-Value="customer.Name" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="id">Sobrenome</label>
+                        <InputText id="LastName" @bind-Value="customer.LastName" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="id">Endereço</label>
+                        <InputText id="Address" @bind-Value="customer.Address" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-6">
+                    @if (inProgress)
+                    {
+                        <button class="btn btn-success float-left" type="submit" disabled>
+                            <span class="oi oi-task"></span> Salvando
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success float-left" type="submit">
+                            <span class="oi oi-task"></span> Salvar
+                        </button>
+                    }
+                </div>
+                <div class="col-6">
+                    <a class="btn btn-secondary float-right" href="/customers">
+                        <span class="oi oi-chevron-left"></span> Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    #region variables
+    private CustomerViewModel customer = new CustomerViewModel();
+
+    bool inProgress = false;
+
+    [Parameter]
+    public int? Id { get; set; }
+    #endregion
+
+    #region life cycle
+    protected override void OnParametersSet()
+    {
+        if (Id.HasValue)
+            customer = _mapper.Map<CustomerViewModel>(_service.All().SingleOrDefault(x => x.Id == Id));
+    }
+    #endregion
+
+    #region functions
+    private async void HandleSubmit()
+    {
+        ToggleProgress();
+        
+        if (customer.Id == 0)
+            await _service.CreateAsync(_mapper.Map<Customer>(customer));
+        else
+            await _service.UpdateAsync(_mapper.Map<Customer>(customer));
+        
+        ToggleProgress();
+
+        _navigationManager.NavigateTo("customers");
+    }
+
+    private void ToggleProgress() => inProgress = !inProgress;
+    #endregion
+}

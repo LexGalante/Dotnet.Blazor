@@ -3,3 +3,11 @@
 ################################################################################
 
 /.vs/Dotnet.Blazor
+/src/Dotnet.Blazor.Application/obj
+/src/Dotnet.Blazor.Application/bin/Debug/netcoreapp3.0
+/src/Dotnet.Blazor.Domain/obj
+/src/Dotnet.Blazor.Domain/bin/Debug/netcoreapp3.0
+/src/Dotnet.Blazor.Infra/bin/Debug/netcoreapp3.0
+/src/Dotnet.Blazor.Infra/obj
+/src/Dotnet.Blazor.Service/obj
+/src/Dotnet.Blazor.Service/bin/Debug/netcoreapp3.0
